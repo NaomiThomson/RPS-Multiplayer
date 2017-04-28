@@ -1,0 +1,43 @@
+* {
+  font-family: 'Roboto Mono', monospace;
+}
+
+/* Border around entire game*/
+#top, #bottom, #left, #right {
+	background: #000;
+	position: fixed;
+	}
+	#left, #right {
+		top: 0; bottom: 0;
+		width: 5px;
+		}
+		#left { left: 0; }
+		#right { right: 0; }
+
+	#top, #bottom {
+		left: 0; right: 0;
+		height: 5px;
+		}
+		#top { top: 0; }
+		#bottom { bottom: 0; }
+
+/*Don't display border on small screens*/
+@media
+/* Fairly small screens including iphones */
+only screen and (max-width: 500px),
+/* iPads */
+only screen and (min-device-width: 768px) and (max-device-width: 1024px)
+{
+	#top, #bottom, #left, #right { display: none; }
+}
+
+/*Clickable user icons*/
+.fa {
+  font-size: 3em;
+  cursor: pointer;
+  margin: 0.25em;
+}
+
+.col-lg-8 {
+  margin: 0 auto;
+}
