@@ -31,6 +31,11 @@ only screen and (min-device-width: 768px) and (max-device-width: 1024px)
 	#top, #bottom, #left, #right { display: none; }
 }
 
+.game-panels {
+  text-align: center;
+  font-size: 1.5em;
+}
+
 /*Clickable user icons*/
 .fa {
   font-size: 3em;
@@ -38,6 +43,15 @@ only screen and (min-device-width: 768px) and (max-device-width: 1024px)
   margin: 0.25em;
 }
 
-.col-lg-8 {
-  margin: 0 auto;
+.fa-sign-out {
+  float: right;
+}
+
+.send-msg {
+  margin-bottom: 5em;
+}
+
+.jumbotron {
+  padding-top: 20px;
+  padding-bottom: 20px;
 }

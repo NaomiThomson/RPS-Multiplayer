@@ -43,16 +43,58 @@
       <div class="col-lg-4">
         <input type="text" class="form-control" id="player-name" placeholder="Name">
       </div>
-      <div class="col-lg-3">
-        <button type="submit" class="btn btn-primary" id="add-category">Start</button>
+      <div class="col-lg-4">
+        <button type="submit" class="btn btn-primary" id="add-player">Start</button>
+      </div>
+      <div class="col-lg-4">
+        <i class="fa fa-sign-out" aria-hidden="true"></i>
       </div>
       <h4 class="text-center hidden" id="player-alert">Hi! You are Player 1! Waiting for Player 2 to choose.</h4>
+    </div><br>
+
+    <div class="row">
+      <div class="col-lg-4 game-panels">
+        <div id="player1"></div>
+        <i data-move = "r" class="fa fa-hand-rock-o move1"></i>
+        <i data-move="p" class="fa fa-hand-paper-o move1"></i>
+        <i data-move="s" class="fa fa-hand-scissors-o move1"></i>
+        <p id="score1">
+          Wins:0  Losses:0
+        </p>
+      </div>
+      <div class="col-lg-4 game-panels">
+
+      </div>
+      <div class="col-lg-4 game-panels">
+        <div id="player2"></div>
+        <i data-move = "r" class="fa fa-hand-rock-o move2"></i>
+        <i data-move="p" class="fa fa-hand-paper-o move2"></i>
+        <i data-move="s" class="fa fa-hand-scissors-o move2"></i>
+        <p id="score-2">
+          Wins:0  Losses:0
+        </p>
+      </div>
+    </div><br>
+
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="form-group">
+          <textarea class="form-control" id="exampleTextarea" rows="5"></textarea>
+        </div>
+      </div>
     </div>
 
-
+    <div class="row">
+      <div class="col-lg-10">
+        <input type="text" class="form-control" id="player-chat" placeholder="Type to begin game chat">
+      </div>
+      <div class="col-lg-2 send-msg">
+        <button type="submit" class="btn btn-primary" id="send-msg">Send</button>
+      </div>
+    </div>
 
     <!-- JavaScript -->
-    <script src="script.js"></script>
+    <script src="script3.js"></script>
 
     </div>
   </body>
