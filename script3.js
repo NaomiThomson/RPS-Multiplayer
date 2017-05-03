@@ -96,6 +96,9 @@ db.ref().on('child_changed', function(snapshot) {
   var p1 = snapObj.p1.choice;
   var p2 = snapObj.p2.choice;
   console.log(p1,p2);
+
+  //check for turn first, then check game result if both players have chosen
+  checkPlayerStatus();
   checkGameResult(p1,p2);
 })
 
@@ -121,35 +124,4 @@ function checkGameResult(choice1, choice2) {
       break
   };
 
-  // switch (player1Choice) {
-  //
-  //   case player1Choice == player2Choice:
-  //     $('#game-result').html('Tie!');
-  //     break;
-  //
-  //   case player1Choice == 'r' && player2Choice == 'p':
-  //     console.log('p2 wins');
-  //     break;
-  //
-  //   case player1Choice == 'r' && player2Choice == 's':
-  //     console.log('p1 wins');
-  //     break;
-  //
-  //   case player1Choice == 'p' && player2Choice == 'r':
-  //     console.log('p1 wins');
-  //     break;
-  //
-  //   case player1Choice == 'p' && player2Choice == 's':
-  //     console.log('p2 wins');
-  //     break;
-  //
-  //   case player1Choice == 's' && player2Choice == 'p':
-  //     console.log('p1 wins');
-  //     break;
-  //
-  //   case player1Choice == 's' && player2Choice == 'r':
-  //     console.log('p2 wins');
-  //     break;
-  //
-  // }
 }
