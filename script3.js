@@ -10,10 +10,16 @@ var config = {
 firebase.initializeApp(config);
 
 gameObj = {
+  p1 : '',
+  p2 : '',
   turn1 : 0,
   turn2 : 0,
   choice1 : 0,
-  choice2 : 0
+  choice2 : 0,
+  p1W : 0,
+  p2W : 0,
+  p1L : 0,
+  p2L: 0
 };
 
 db = firebase.database();
@@ -56,19 +62,27 @@ db.ref().once("value", function(snapshot) {
 db.ref().on("value", function(snapshot) {
   var snapObj = snapshot.val();
 
-
   if (snapshot.child('players').exists()) {
     if (snapObj.players.p1.name != 0) {
-      $('#player1').html(snapObj.players.p1.name)
+      gameObj.p1 = snapObj.players.p1.name;
+      gameObj.turn1 = snapObj.players.p1.turn;
+      gameObj.choice1 = snapObj.players.p1.choice;
+      gameObj.p1W = snapObj.players.p1.wins;
+      gameObj.p1L = snapObj.players.p1.losses;
+      $('#player1').html(snapObj.players.p1.name);
     }
 
     if (snapObj.players.p2.name != 0) {
-      $('#player2').html(snapObj.players.p2.name)
+      gameObj.p2 = snapObj.players.p2.name;
+      gameObj.turn2 = snapObj.players.p2.turn;
+      gameObj.choice2 = snapObj.players.p2.choice;
+      gameObj.p2W = snapObj.players.p2.wins;
+      gameObj.p2L = snapObj.players.p2.losses;
+      $('#player2').html(snapObj.players.p2.name);
     }
-
   }
 
-
+  updateHTMLScore();
 });
 
 $('#add-player').click(function() {
@@ -78,9 +92,9 @@ $('#add-player').click(function() {
   var name = $('#player-name').val().trim();
 
   if ($('#player1').is(':empty')) {
-    db.ref('players/p1').update({name})
+    db.ref('players/p1').update({name});
   } else if ($('#player2').is(':empty')) {
-    db.ref('players/p2').update({name})
+    db.ref('players/p2').update({name});
   } else {
     alert('Can\'t join right now, sorry!')
   }
@@ -123,7 +137,7 @@ db.ref('players/p1/turn').on('value', function(snapshot) {
 
   //check for turn first, then check game result if both players have chosen
   if (checkPlayerStatus(gameObj.turn1, gameObj.turn2) == true) {
-    checkGameResult(gameObj.choice1,gameObj.choice2);
+    updateGameResult(gameObj.choice1,gameObj.choice2);
   } else {
     console.log('wait');
   }
@@ -136,7 +150,7 @@ db.ref('players/p2/turn').on('value', function(snapshot) {
 
   //check for turn first, then check game result if both players have chosen
   if (checkPlayerStatus(gameObj.turn1, gameObj.turn2) == true) {
-    checkGameResult(gameObj.choice1,gameObj.choice2);
+    updateGameResult(gameObj.choice1,gameObj.choice2);
   } else {
     console.log('wait');
   }
@@ -153,21 +167,50 @@ function checkPlayerStatus(turn1, turn2) {
   }
 }
 
-function checkGameResult(choice1, choice2) {
+function updateGameResult(choice1, choice2) {
 
   switch(choice1+choice2){
     case 'rr': case 'ss': case 'pp':
-      console.log('tie');
+      $('#game-result').html(('tie!'));
       break
-    case 'rs': case 'sr':
-      console.log('rock');
+    case 'rs': case 'pr': case 'sp':
+      p1Wins();
       break
-    case 'rp': case 'pr':
-      console.log('paper');
-      break
-    case 'sp' : case 'ps':
-      console.log('scissors');
+    case 'sr': case 'rp': case 'ps':
+      p2Wins();
       break
   };
+};
 
+function displayChoices() {
+
+}
+
+function p1Wins() {
+  $('#game-result').html((gameObj.p1 + ' wins!'));
+  gameObj.p1W++;
+  gameObj.p2L++;
+  db.ref('players').update({
+    'p1/wins' : gameObj.p1W,
+    'p2/losses' : gameObj.p2L
+  });
+  updateHTMLScore();
+};
+
+function p2Wins() {
+  $('#game-result').html((gameObj.p2 + ' wins!'));
+  gameObj.p1L++;
+  gameObj.p2W++;
+  db.ref('players').update({
+    'p1/losses' : gameObj.p1L,
+    'p2/wins' : gameObj.p2W
+  });
+  updateHTMLScore();
+};
+
+function updateHTMLScore() {
+  $('#wins1').html('Wins: ' + gameObj.p1W);
+  $('#losses1').html('Losses: ' + gameObj.p1L);
+  $('#wins2').html('Wins: ' + gameObj.p2W);
+  $('#losses2').html('Losses: ' + gameObj.p2L);
 }
