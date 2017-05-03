@@ -9,6 +9,8 @@ var config = {
 };
 firebase.initializeApp(config);
 
+var count1 = 0;
+var count2 = 0;
 
 db = firebase.database();
 
@@ -20,13 +22,15 @@ function initDB() {
         name: 0,
         choice: 0,
         losses: 0,
-        wins: 0
+        wins: 0,
+        turn: 0
       },
       p2: {
         name: 0,
         choice: 0,
         losses: 0,
-        wins: 0
+        wins: 0,
+        turn: 0
       }
     },
     turn: 0
@@ -37,10 +41,9 @@ function initDB() {
 db.ref().once("value", function(snapshot) {
   var snapObj = snapshot.val();
 
-  try {
-    console.log(snapObj.players);
-  }
-  catch(e) {
+  if (snapshot.child('players').exists()) {
+    console.log('all good');
+  } else {
     initDB();
   }
 });
@@ -82,34 +85,53 @@ $('#add-player').click(function() {
 
 $('.move1').click(function() {
   var choice = $(this).attr('data-move');
-  db.ref('players/p1').update({choice})
+  db.ref('players/p1').update({choice});
+
+  count1++;
+  db.ref('players/p1').update({
+    turn : count1
+  })
 });
 
 $('.move2').click(function() {
   var choice = $(this).attr('data-move');
   db.ref('players/p2').update({choice});
+
+  count2++;
+  db.ref('players/p2').update({
+    turn : count2
+  })
 });
 
-db.ref().on('child_changed', function(snapshot) {
+
+db.ref('players').on('value', function(snapshot) {
   var snapObj = snapshot.val();
-  console.log(snapObj);
-  var p1 = snapObj.p1.choice;
-  var p2 = snapObj.p2.choice;
-  console.log(p1,p2);
+
+  var p1Choice = snapObj.p1.choice;
+  var p2Choice = snapObj.p2.choice;
+
+  var p1Turn = snapObj.p1.turn;
+  var p2Turn = snapObj.p2.turn;
 
   //check for turn first, then check game result if both players have chosen
-  checkPlayerStatus();
-  checkGameResult(p1,p2);
+  if (checkPlayerStatus(p1Turn, p2Turn) == true) {
+    checkGameResult(p1Choice,p2Choice);
+  } else {
+    console.log('wait');
+  }
+
 })
 
-function checkPlayerStatus() {
-  // check to see if other player has chosen yet
+function checkPlayerStatus(turn1, turn2) {
+  // check to see if both players have chosen yet
+  if (turn1 == turn2) {
+    return true
+  } else {
+    return false
+  }
 }
 
 function checkGameResult(choice1, choice2) {
-
-  console.log(choice1);
-  console.log(choice2);
 
   if(choice1==choice2) console.log('Tie!');
   switch(choice1+choice2){
@@ -122,6 +144,8 @@ function checkGameResult(choice1, choice2) {
     case 'sp' : case 'ps':
       console.log('scissors');
       break
+    default:
+      console.log('waiting on other player');
   };
 
 }
