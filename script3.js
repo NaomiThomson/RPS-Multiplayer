@@ -9,8 +9,12 @@ var config = {
 };
 firebase.initializeApp(config);
 
-var count1 = 0;
-var count2 = 0;
+gameObj = {
+  turn1 : 0,
+  turn2 : 0,
+  choice1 : 0,
+  choice2 : 0
+};
 
 db = firebase.database();
 
@@ -35,7 +39,7 @@ function initDB() {
     },
     turn: 0
   });
-}
+};
 
 // Will only fire once if database doesn't exist
 db.ref().once("value", function(snapshot) {
@@ -87,9 +91,9 @@ $('.move1').click(function() {
   var choice = $(this).attr('data-move');
   db.ref('players/p1').update({choice});
 
-  count1++;
+  gameObj.turn1++;
   db.ref('players/p1').update({
-    turn : count1
+    turn : gameObj.turn1
   })
 });
 
@@ -97,9 +101,9 @@ $('.move2').click(function() {
   var choice = $(this).attr('data-move');
   db.ref('players/p2').update({choice});
 
-  count2++;
+  gameObj.turn2++;
   db.ref('players/p2').update({
-    turn : count2
+    turn : gameObj.turn2
   })
 });
 
@@ -107,34 +111,54 @@ $('.move2').click(function() {
 db.ref('players').on('value', function(snapshot) {
   var snapObj = snapshot.val();
 
-  var p1Choice = snapObj.p1.choice;
-  var p2Choice = snapObj.p2.choice;
+  gameObj.choice1 = snapObj.p1.choice;
+  gameObj.choice2 = snapObj.p2.choice;
 
-  var p1Turn = snapObj.p1.turn;
-  var p2Turn = snapObj.p2.turn;
+});
+
+db.ref('players/p1/turn').on('value', function(snapshot) {
+
+  var p1Turn = snapshot.val();
+  gameObj.turn1 = p1Turn;
 
   //check for turn first, then check game result if both players have chosen
-  if (checkPlayerStatus(p1Turn, p2Turn) == true) {
-    checkGameResult(p1Choice,p2Choice);
+  if (checkPlayerStatus(gameObj.turn1, gameObj.turn2) == true) {
+    checkGameResult(gameObj.choice1,gameObj.choice2);
   } else {
     console.log('wait');
   }
+});
 
-})
+db.ref('players/p2/turn').on('value', function(snapshot) {
+
+  var p2Turn = snapshot.val();
+  gameObj.turn2 = p2Turn;
+
+  //check for turn first, then check game result if both players have chosen
+  if (checkPlayerStatus(gameObj.turn1, gameObj.turn2) == true) {
+    checkGameResult(gameObj.choice1,gameObj.choice2);
+  } else {
+    console.log('wait');
+  }
+});
 
 function checkPlayerStatus(turn1, turn2) {
   // check to see if both players have chosen yet
   if (turn1 == turn2) {
+    console.log('true');
     return true
   } else {
+    console.log('false');
     return false
   }
 }
 
 function checkGameResult(choice1, choice2) {
 
-  if(choice1==choice2) console.log('Tie!');
   switch(choice1+choice2){
+    case 'rr': case 'ss': case 'pp':
+      console.log('tie');
+      break
     case 'rs': case 'sr':
       console.log('rock');
       break
@@ -144,8 +168,6 @@ function checkGameResult(choice1, choice2) {
     case 'sp' : case 'ps':
       console.log('scissors');
       break
-    default:
-      console.log('waiting on other player');
   };
 
 }
