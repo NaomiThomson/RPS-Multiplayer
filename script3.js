@@ -108,7 +108,11 @@ $('.move1').click(function() {
   gameObj.turn1++;
   db.ref('players/p1').update({
     turn : gameObj.turn1
-  })
+  });
+
+  $('.move1').not(this).each(function(){
+    $(this).addClass('hidden');
+  });
 });
 
 $('.move2').click(function() {
@@ -118,7 +122,11 @@ $('.move2').click(function() {
   gameObj.turn2++;
   db.ref('players/p2').update({
     turn : gameObj.turn2
-  })
+  });
+
+  $('.move2').not(this).each(function(){
+    $(this).addClass('hidden');
+  });
 });
 
 
@@ -183,8 +191,19 @@ function updateGameResult(choice1, choice2) {
 };
 
 function displayChoices() {
-
-}
+  var p1Move = gameObj.choice1;
+  var p2Move = gameObj.choice2;
+  $('.move1').each(function() {
+    if ($(this).attr('data-move') != p1Move) {
+      $(this).addClass('hidden');
+    }
+  });
+  $('.move2').each(function() {
+    if ($(this).attr('data-move') != p2Move) {
+      $(this).addClass('hidden');
+    }
+  });
+}; 
 
 function p1Wins() {
   $('#game-result').html((gameObj.p1 + ' wins!'));
@@ -194,6 +213,7 @@ function p1Wins() {
     'p1/wins' : gameObj.p1W,
     'p2/losses' : gameObj.p2L
   });
+  displayChoices();
   updateHTMLScore();
 };
 
@@ -205,6 +225,7 @@ function p2Wins() {
     'p1/losses' : gameObj.p1L,
     'p2/wins' : gameObj.p2W
   });
+  displayChoices();
   updateHTMLScore();
 };
 
