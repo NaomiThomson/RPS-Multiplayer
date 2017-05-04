@@ -42,8 +42,7 @@ function initDB() {
         wins: 0,
         turn: 0
       }
-    },
-    turn: 0
+    }
   });
 };
 
@@ -96,7 +95,7 @@ $('#add-player').click(function() {
   } else if ($('#player2').is(':empty')) {
     db.ref('players/p2').update({name});
   } else {
-    alert('Can\'t join right now, sorry!')
+    alert('Can\'t join right now. Sorry, you\'ll have to wait your turn!')
   }
 });
 
@@ -129,6 +128,20 @@ $('.move2').click(function() {
   });
 });
 
+// $('button').click(function() {
+//   var chatIn = $('#player-chat').val();
+//   var newIn = $('<div>');
+//   newIn.append(chatIn);
+//   $('#chat-display').append(newIn);
+// });
+
+$('#p1-exit').click(function() {
+  removeP1();
+});
+
+$('#p2-exit').click(function() {
+  removeP2();
+});
 
 db.ref('players').on('value', function(snapshot) {
   var snapObj = snapshot.val();
@@ -146,6 +159,7 @@ db.ref('players/p1/turn').on('value', function(snapshot) {
   //check for turn first, then check game result if both players have chosen
   if (checkPlayerStatus(gameObj.turn1, gameObj.turn2) == true) {
     updateGameResult(gameObj.choice1,gameObj.choice2);
+    setTimeout(nextRound, 3000)
   } else {
     console.log('wait');
   }
@@ -254,4 +268,44 @@ function nextRound() {
       $(this).removeClass('hidden');
     }
   });
+};
+
+function chatBox() {
+
+}
+
+function removeP1() {
+  db.ref('players/p1').update({
+    choice : 0,
+    losses : 0,
+    name : 0,
+    turn : 0,
+    wins: 0
+  });
+  db.ref('players/p2').update({
+    turn : 0,
+    losses : 0,
+    wins : 0
+  })
+  $('#player1').empty();
+  $('#wins1').empty();
+  $('#losses1').empty();
+};
+
+function removeP2() {
+  db.ref('players/p2').update({
+    choice : 0,
+    losses : 0,
+    name : 0,
+    turn : 0,
+    wins: 0
+  });
+  db.ref('players/p1').update({
+    turn : 0,
+    losses : 0,
+    wins : 0
+  })
+  $('#player2').empty();
+  $('#wins2').empty();
+  $('#losses2').empty();
 }
