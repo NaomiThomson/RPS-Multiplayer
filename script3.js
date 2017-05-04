@@ -159,6 +159,7 @@ db.ref('players/p2/turn').on('value', function(snapshot) {
   //check for turn first, then check game result if both players have chosen
   if (checkPlayerStatus(gameObj.turn1, gameObj.turn2) == true) {
     updateGameResult(gameObj.choice1,gameObj.choice2);
+    setTimeout(nextRound, 3000)
   } else {
     console.log('wait');
   }
@@ -179,7 +180,7 @@ function updateGameResult(choice1, choice2) {
 
   switch(choice1+choice2){
     case 'rr': case 'ss': case 'pp':
-      $('#game-result').html(('tie!'));
+      p1p2Tie();
       break
     case 'rs': case 'pr': case 'sp':
       p1Wins();
@@ -203,7 +204,12 @@ function displayChoices() {
       $(this).addClass('hidden');
     }
   });
-}; 
+};
+
+function p1p2Tie() {
+  $('#game-result').html(('tie!'));
+  displayChoices();
+};
 
 function p1Wins() {
   $('#game-result').html((gameObj.p1 + ' wins!'));
@@ -234,4 +240,18 @@ function updateHTMLScore() {
   $('#losses1').html('Losses: ' + gameObj.p1L);
   $('#wins2').html('Wins: ' + gameObj.p2W);
   $('#losses2').html('Losses: ' + gameObj.p2L);
+}
+
+function nextRound() {
+  $('#game-result').empty();
+  $('.move1').each(function() {
+    if ($(this).hasClass('hidden')) {
+      $(this).removeClass('hidden');
+    }
+  });
+  $('.move2').each(function() {
+    if ($(this).hasClass('hidden')) {
+      $(this).removeClass('hidden');
+    }
+  });
 }
