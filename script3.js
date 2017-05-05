@@ -26,7 +26,9 @@ db = firebase.database();
 
 function initDB() {
   db.ref().set({
-    chat: 0,
+    chat: {
+      chatIn: 0
+    },
     players: {
       p1: {
         name: 0,
@@ -79,7 +81,7 @@ db.ref().on("value", function(snapshot) {
       gameObj.p2L = snapObj.players.p2.losses;
       $('#player2').html(snapObj.players.p2.name);
     }
-  }
+  };
 
   updateHTMLScore();
 });
@@ -144,15 +146,31 @@ $('#p2-exit').click(function() {
 db.ref('chat').on('value', function(snapshot) {
   var snapObj = snapshot.val();
   var newMsg = snapObj.chatIn;
-  var chatBox = $('#chat-display');
-  chatBox.val(chatBox.val() + newMsg + '\n');
+  if (newMsg != 0) {
+    var chatBox = $('#chat-display');
+    chatBox.val(chatBox.val() + newMsg + '\n');
+  } else if (newMsg == 0) {
+    $('#chat-display').val('');
+  }
 });
 
 db.ref('players').on('value', function(snapshot) {
   var snapObj = snapshot.val();
 
+  gameObj.p1 = snapObj.p1.name;
+  gameObj.p2 = snapObj.p2.name;
+
+  if (gameObj.p1 == 0) {
+    $('#player1').empty();
+  };
+
+  if (gameObj.p2 == 0) {
+    $('#player2').empty();
+  };
+
   gameObj.choice1 = snapObj.p1.choice;
   gameObj.choice2 = snapObj.p2.choice;
+
 
 });
 
@@ -179,6 +197,7 @@ db.ref('players/p2/turn').on('value', function(snapshot) {
     setTimeout(nextRound, 3000)
   }
 });
+
 
 function checkPlayerStatus(turn1, turn2) {
   // check to see if both players have chosen yet
@@ -269,10 +288,6 @@ function nextRound() {
   });
 };
 
-function chatBox() {
-
-}
-
 function removeP1() {
   db.ref('players/p1').update({
     choice : 0,
@@ -285,7 +300,8 @@ function removeP1() {
     turn : 0,
     losses : 0,
     wins : 0
-  })
+  });
+  db.ref('chat').update({chatIn:0});
   $('#player1').empty();
   $('#wins1').empty();
   $('#losses1').empty();
@@ -303,7 +319,8 @@ function removeP2() {
     turn : 0,
     losses : 0,
     wins : 0
-  })
+  });
+  db.ref('chat').update({chatIn:0});
   $('#player2').empty();
   $('#wins2').empty();
   $('#losses2').empty();
