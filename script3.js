@@ -128,12 +128,10 @@ $('.move2').click(function() {
   });
 });
 
-// $('button').click(function() {
-//   var chatIn = $('#player-chat').val();
-//   var newIn = $('<div>');
-//   newIn.append(chatIn);
-//   $('#chat-display').append(newIn);
-// });
+$('button').click(function() {
+  var chatIn = $('#player-chat').val();
+  db.ref('chat').update({chatIn});
+});
 
 $('#p1-exit').click(function() {
   removeP1();
@@ -141,6 +139,13 @@ $('#p1-exit').click(function() {
 
 $('#p2-exit').click(function() {
   removeP2();
+});
+
+db.ref('chat').on('value', function(snapshot) {
+  var snapObj = snapshot.val();
+  var newMsg = snapObj.chatIn;
+  var chatBox = $('#chat-display');
+  chatBox.val(chatBox.val() + newMsg + '\n');
 });
 
 db.ref('players').on('value', function(snapshot) {
@@ -160,8 +165,6 @@ db.ref('players/p1/turn').on('value', function(snapshot) {
   if (checkPlayerStatus(gameObj.turn1, gameObj.turn2) == true) {
     updateGameResult(gameObj.choice1,gameObj.choice2);
     setTimeout(nextRound, 3000)
-  } else {
-    console.log('wait');
   }
 });
 
@@ -174,18 +177,14 @@ db.ref('players/p2/turn').on('value', function(snapshot) {
   if (checkPlayerStatus(gameObj.turn1, gameObj.turn2) == true) {
     updateGameResult(gameObj.choice1,gameObj.choice2);
     setTimeout(nextRound, 3000)
-  } else {
-    console.log('wait');
   }
 });
 
 function checkPlayerStatus(turn1, turn2) {
   // check to see if both players have chosen yet
   if (turn1 == turn2) {
-    console.log('true');
     return true
   } else {
-    console.log('false');
     return false
   }
 }
